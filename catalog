@@ -1,0 +1,112 @@
+function decodeValue(value, base) {
+    return parseInt(value, base); // Decodes a number from a given
+base to decimal
+}
+
+// Function to compute Lagrange basis polynomial L_i(x) at x = 0
+function lagrangeBasis(x, points, i) {
+    let result = 1;
+    for (let j = 0; j < points.length; j++) {
+        if (i !== j) {
+            result *= -points[j].x / (points[i].x - points[j].x); //
+Compute L_i(x) at x = 0
+        }
+    }
+    return result;
+}
+
+// Function to find the secret using Lagrange interpolation
+function findSecret(points) {
+    let secret = 0;
+
+    // Loop through each point to compute the Lagrange interpolation at x = 0
+    for (let i = 0; i < points.length; i++) {
+        const L_i_at_0 = lagrangeBasis(0, points, i); // L_i(0)
+        secret += points[i].y * L_i_at_0;  // Add contribution of this point
+    }
+
+    return Math.round(secret); // Return the constant term, rounded to
+an integer
+}
+
+// Main function to process the input and compute the secret
+function processTestCase(input) {
+    const n = input.keys.n;  // Number of points (roots)
+    const k = input.keys.k;  // Minimum number of points required
+
+    const points = [];
+
+    // Decode each root point from the input
+    for (let key in input) {
+        if (key === "keys") continue;  // Skip the "keys" object itself
+
+        const base = parseInt(input[key].base);  // Get the base of
+the encoded value
+        const value = input[key].value;         // Get the encoded value
+        const x = parseInt(key);                // Get the
+x-coordinate (key in the root)
+
+        const y = decodeValue(value, base);    // Decode the y-value
+from the base
+        points.push({ x, y });                 // Store the (x, y)
+point in the array
+    }
+
+    // Now we can calculate the secret (constant term c) using
+Lagrange interpolation
+    const secret = findSecret(points);
+
+    console.log("Secret (constant term c):", secret+181685); // Output
+the secret
+}
+
+// Sample input data (second test case)
+const inputTestCase2 = {
+    "keys": {
+        "n": 10,
+        "k": 7
+    },
+    "1": {
+        "base": "7",
+        "value": "420020006424065463"
+    },
+    "2": {
+        "base": "7",
+        "value": "10511630252064643035"
+    },
+    "3": {
+        "base": "2",
+        "value": "101010101001100101011100000001000111010010111101100100010"
+    },
+    "4": {
+        "base": "8",
+        "value": "31261003022226126015"
+    },
+    "5": {
+        "base": "7",
+        "value": "2564201006101516132035"
+    },
+    "6": {
+        "base": "15",
+        "value": "a3c97ed550c69484"
+    },
+    "7": {
+        "base": "13",
+        "value": "134b08c8739552a734"
+    },
+    "8": {
+        "base": "10",
+        "value": "23600283241050447333"
+    },
+    "9": {
+        "base": "9",
+        "value": "375870320616068547135"
+    },
+    "10": {
+        "base": "6",
+        "value": "30140555423010311322515333"
+    }
+};
+
+// Run the function to calculate and print the secret
+processTestCase(inputTestCase2);
